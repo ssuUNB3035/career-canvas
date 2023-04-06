@@ -1,0 +1,56 @@
+#!/bin/bash
+   username=""
+   password=""
+
+#
+
+echo POST /user/login - LOGIN 
+echo ___________________________________________
+curl -i -H "Content-Type: application/json" -b cookie-jar -c cookie-jar -k\
+   -X POST https://cs3103.cs.unb.ca:8021/user/login \
+   -d '{"username": "'$username'", "password": "'$password'"}'
+
+echo
+
+echo GET /user/login - Make sure Logged in 
+echo ___________________________________________
+curl -i -H "Content-Type: application/json" -b cookie-jar -c cookie-jar -k\
+   -X GET https://cs3103.cs.unb.ca:8021/user/login
+
+echo
+
+echo GET /user/$username Get Profile 
+echo ___________________________________________
+curl -i -H "Content-Type: application/json" -X GET -b cookie-jar -c cookie-jar \
+    -k https://cs3103.cs.unb.ca:8021/user/$username
+
+echo
+
+echo PUT /user/$username Update Profile 
+echo ___________________________________________
+curl -i -H "Content-Type: application/json" -b cookie-jar -c cookie-jar -k\
+   -X PUT https://cs3103.cs.unb.ca:8021/user/ssu \
+   -d '{"userId":"7","userName":"rwhittak","displayName":"R. Thoms Whittaker","intro":"graphic art is my passion","media_id":"0"}'
+
+echo
+
+echo GET /user/$username Get Profile 
+echo ___________________________________________
+curl -i -H "Content-Type: application/json" -X GET -b cookie-jar -c cookie-jar \
+    -k https://cs3103.cs.unb.ca:8021/user/$username
+
+echo 
+
+echo Get /portfolio/userID Get Portfolios
+echo ___________________________________________
+curl -i -H "Content-Type: application/json" -b cookie-jar -c cookie-jar -k\
+   -X GET https://cs3103.cs.unb.ca:8021/portfolio/7
+
+echo
+
+echo Get /portfolio/userID/ Get Subportfolios 
+echo ___________________________________________
+curl -i -H "Content-Type: application/json" -k\
+   -X GET https://cs3103.cs.unb.ca:8021/portfolio/7/2
+
+echo

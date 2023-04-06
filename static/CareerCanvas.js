@@ -92,6 +92,9 @@ Vue.component('navbar', {
   var app = new Vue({
   el: '#app',
   data: {
+    serviceURL: "https://cs3103.cs.unb.ca:8021",
+    authenticated: false,
+    loggedIn: null,
     popupVisible: false,
     username: '',
     password: '',
@@ -162,34 +165,27 @@ Vue.component('navbar', {
       this.popupVisible = false;
     },
     submitForm: function() {
-      event.preventDefault();
-      // You could use axios here to make a POST request with the form data
-      var vm = this;
+      if (this.username != "" && this.password != "") {
+        axios
+        .post(this.serviceURL+"/user/login", {
+            "username": this.input.username,
+            "password": this.input.password
+        })
+        .then(response => {
+            if (response.data.status == "success") {
+              this.authenticated = true;
+              this.loggedIn = response.data.user_id;
+            }
+        })
+        .catch(e => {
+            alert("The username or password was incorrect, try again");
+            this.input.password = "";
+            console.log(e);
+        });
+      } else {
+        alert("A username and password must be present");
+      }
 
-      var username = vm.username;
-      var password = vm.password;
-      
-      // create the JSON data for the request body
-      var data = { "username": username, "password": password };
-      
-      // send the request with fetch
-      fetch("https://cs3103.cs.unb.ca:8021/user/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-        credentials: "include"
-      })
-      .then(response => {
-        // check if the response was successful (status code 2xx)
-        if (response.ok) {
-          console.log("Login successful!");
-        } else {
-          console.error("Login failed.");
-        }
-      })
-      .catch(error => {
-        console.error("Error:", error);
-      });
       this.popupVisible = false;
     }
   }
