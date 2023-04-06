@@ -30,7 +30,6 @@ Vue.component('login-logout', {
     login() {
       // Code for login
       // Set popupVisible to true to show the login form
-      console.log("why");
       this.$parent.$parent.popupVisible = true;
     },
     logout() {
@@ -40,8 +39,8 @@ Vue.component('login-logout', {
   },
   template: `
     <div>
-      <button v-if="!loggedIn" @click="login" type="button" class="btn btn-primary">Login</button>
-      <button v-if="loggedIn" @click="logout" type="button" class="btn btn-primary">Logout</button>
+      <button v-if="!authenticated" @click="login" type="button" class="btn btn-primary">Login</button>
+      <button v-if="authenticated" @click="logout" type="button" class="btn btn-primary">Logout</button>
     </div>
   `
 });
@@ -168,8 +167,8 @@ Vue.component('navbar', {
       if (this.username != "" && this.password != "") {
         axios
         .post(this.serviceURL+"/user/login", {
-            "username": this.input.username,
-            "password": this.input.password
+            "username": this.username,
+            "password": this.password
         })
         .then(response => {
             if (response.data.status == "success") {
