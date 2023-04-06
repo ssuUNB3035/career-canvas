@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Career Canvas</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <body>
+    
+    <!--development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <div id="app">
+      <navbar></navbar>
+
+      <div v-if="popupVisible" class="popup" @click.self="closePopup">
+        <form class="popup-form" @submit.prevent="submitForm">
+          <label>Username:</label>
+          <input type="text" v-model="username"><br><br>
+          <label>Password:</label>
+          <input type="password" v-model="password"><br><br>
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+
+      <div v-if="showUserSearch">
+        <!-- Page Content -->
+        <div class="container my-4">
+          <!-- User Cards -->
+          <div id="user-list">
+            <div class="row">
+              <user-card v-for="user in users" :key="user.id" :user="user"></user-card>
+            </div>
+          </div>
+        </div>
+      </div> <!-- closing div tag for showUserSearch -->
+
+      <div v-if="showMyPortfolio">
+        <div class="sidebar">
+          <div id="sidebarInfo" class="d-flex align-items-center p-3">
+              <img class="rounded-circle mr-2" style="width: 50px; height: auto;" src="https://img.icons8.com/nolan/256/user-default.png" alt="Profile Picture" />
+              <div>
+                  <h6 class="mb-0">John Doe</h6>
+                  <small class="text-muted">Web Developer</small>
+              </div>
+          </div>
+          <ul>
+              <li v-for="(option, index) in options" :key="index">
+                  <a @click="selectedOption = option">{{ option }}</a>
+              </li>
+          </ul>
+        </div>
+        <div class="card-deck main">
+          <div class="card-wrapper" v-for="(card, index) in cards" :key="index">
+            <div class="card">
+              <img class="card-img-top" :src="card.image" :alt="card.title">
+              <div class="card-body">
+                <h5 class="card-title">{{ card.title }}</h5>
+                <p class="card-text">{{ card.description }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="showAbout">
+        <div class="text-center m-3">
+          <h1>About</h1>
+          <p>Career Canvas is a website designed for individuals to showcase their career journey through the creation and sharing of professional portfolios. Our platform provides a space for individuals to highlight their unique experiences, skills, and accomplishments, allowing them to stand out in today's competitive job market. Whether you're a recent graduate just starting out, a seasoned professional looking to make a career change, or someone in between, Career Canvas offers an easy and effective way to create a portfolio that represents you and your professional brand. Join our community today and let your career journey unfold!</p>
+        </div>
+      </div>
+    </div>
+
+      <script src="./CareerCanvas.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    </body>
+    </html>

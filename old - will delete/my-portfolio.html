@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>Career Canvas</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .navbar {
+            background-color: rgb(61, 61, 61);
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+      
+        .navbar ul {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            justify-content: center;
+        }
+      
+        .navbar li {
+            margin-left: 30px;
+            text-transform: uppercase;
+            padding: 0;
+            margin-bottom: 0;
+        }
+      
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+        }
+      
+        .navbar .logo {
+            max-width: 150px;
+        }
+      
+        .navbar .tabs {
+            margin-right: auto;
+            align-items: center;
+            margin-bottom: 0;
+        }
+
+        .sidebar {
+            background-color: #f1f1f1;
+            height: 100%;
+            position: fixed;
+            left: 0;
+            top: 80px;
+            width: 250px;
+            z-index: 1;
+            padding: 20px;
+            overflow-x: hidden;
+            transition: all 0.3s;
+        }
+        
+        .sidebar a {
+            display: block;
+            color: black;
+            padding: 16px;
+            text-decoration: none;
+        }
+        
+        .sidebar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .main {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        
+        .card-deck {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .card-wrapper {
+            max-width: 33%;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+
+        .card {
+            width: 100%;
+            border: none;
+            border-radius: 0;
+            margin-bottom: 20px;
+        }
+
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+            border-radius: 0;
+        }
+    </style>
+</head>
+    <body>
+
+        <!--development version, includes helpful console warnings -->
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <img src="../resource/websiteLogoWhite.png" class="logo" />
+            <ul class="tabs">
+                <li>
+                    <a href="./index.html">User Search</a>
+                </li>
+                <li>
+                    <a href="./my-portfolio.html">My Portfolio</a>
+                </li>
+                <li>
+                    <a href="./about.html">About</a>
+                </li>
+            </ul>
+            <div>
+                <button type="button" class="btn btn-primary">Login</button>
+            </div>
+        </nav>
+
+        <!-- Sidebar -->
+        <div id="app">
+            <div class="sidebar">
+                <div class="d-flex align-items-center p-3">
+                    <img class="rounded-circle mr-2" style="width: 50px; height: auto;" src="https://img.icons8.com/nolan/256/user-default.png" alt="Profile Picture" />
+                    <div>
+                        <h6 class="mb-0">John Doe</h6>
+                        <small class="text-muted">Web Developer</small>
+                    </div>
+                </div>
+            <ul>
+                <li v-for="(option, index) in options" :key="index">
+                    <a @click="selectedOption = option">{{ option }}</a>
+                </li>
+            </ul>
+        </div>
+      
+        <!-- Grid -->
+        <div class="card-deck main">
+            <div class="card-wrapper" v-for="(card, index) in cards" :key="index">
+              <div class="card">
+                <img class="card-img-top" :src="card.image" :alt="card.title">
+                <div class="card-body">
+                  <h5 class="card-title">{{ card.title }}</h5>
+                  <p class="card-text">{{ card.description }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+      
+    <script>
+        new Vue({
+        el: '#app',
+        data: {
+            selectedOption: 'Option 1',
+            options: ['Option 1', 'Option 2', 'Option 3'],
+            cardData: {
+            'Option 1': [
+                { title: 'Card 1', description: 'This is card 1', image: 'https://via.placeholder.com/150' },
+                { title: 'Card 2', description: 'This is card 2', image: 'https://via.placeholder.com/150' },
+                { title: 'Card 3', description: 'This is card 3', image: 'https://via.placeholder.com/150' },
+                { title: 'Card 4', description: 'This is card 4', image: 'https://via.placeholder.com/150' },
+                { title: 'Card 5', description: 'This is card 5', image: 'https://via.placeholder.com/150' },
+                { title: 'Card 6', description: 'This is card 6', image: 'https://via.placeholder.com/150' },
+            ],
+            'Option 2': [
+                { title: 'Card 7', description: 'This is card 7', image: 'https://via.placeholder.com/150' },
+                { title: 'Card 8', description: 'This is card 8', image: 'https://via.placeholder.com/150' },
+                { title: 'Card 9', description: 'This is card 9', image: 'https://via.placeholder.com/150' },
+                { title: 'Card 10', description: 'This is card 10', image: 'https://via.placeholder.com/150' },
+                { title: 'Card 11', description: 'This is card 11', image: 'https://via.placeholder.com/150' },
+                { title: 'Card 12', description: 'This is card 12', image: 'https://via.placeholder.com/150' },
+            ],
+            'Option 3': [
+                { title: 'Card 13', description: 'This is card 13', image: 'https://via.placeholder.com/150' },
+                { title: 'Card 14', description: 'This is card 14', image: 'https://via.placeholder.com/150' },
+                { title: 'Card 15', description: 'This is card 15', image: 'https://via.placeholder.com/150' },
+                { title: 'Card 16', description: 'This is card 16', image: 'https://via.placeholder.com/150' },
+                { title: 'Card 17', description: 'This is card 17', image: 'https://via.placeholder.com/150' },
+                { title: 'Card 18', description: 'This is card 18', image: 'https://via.placeholder.com/150' },
+            ]
+            }
+        },
+        computed: {
+            cards() {
+                return this.cardData[this.selectedOption];
+            }
+        }
+        });
+    </script>
+  </body>
+</html>

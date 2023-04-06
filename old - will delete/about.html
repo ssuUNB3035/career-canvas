@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Career Canvas</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <style>
+            nav {
+                background-color: rgb(61, 61, 61);
+                color: #fff;
+                display: flex;
+                justify-content: space-between;
+                padding: 10px;
+                position: sticky;
+                top: 0;
+                z-index: 1;
+            }
+
+            ul {
+                display: flex;
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                justify-content: center;
+            }
+
+            li {
+                margin-left: 30px;
+                text-transform: uppercase;
+                padding: 0;
+                margin-bottom: 0;
+            }
+
+            a {
+                color: #fff;
+                text-decoration: none;
+            }
+
+            .logo {
+                max-width: 150px;
+            }
+
+            .tabs {
+                margin-right: auto;
+                align-items: center;
+                margin-bottom: 0;
+            }
+        </style>
+    </head>
+    <body>
+
+    <!--development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <!-- Navigation Bar -->
+    <nav>
+        <img src="../resource/websiteLogoWhite.png" class="logo" />
+        <ul class="tabs">
+        <li>
+            <a href="./index.html">User Search</a>
+        </li>
+        <li>
+            <a href="./my-portfolio.html">My Portfolio</a>
+        </li>
+        <li>
+            <a href="./about.html">About</a>
+        </li>
+        </ul>
+        <div>
+            <button type="button" class="btn btn-primary">Login</button>
+        </div>
+    </nav>
+
+    <div class="text-center m-3">
+        <h1>About</h1>
+        <p>Career Canvas is a website designed for individuals to showcase their career journey through the creation and sharing of professional portfolios. Our platform provides a space for individuals to highlight their unique experiences, skills, and accomplishments, allowing them to stand out in today's competitive job market. Whether you're a recent graduate just starting out, a seasoned professional looking to make a career change, or someone in between, Career Canvas offers an easy and effective way to create a portfolio that represents you and your professional brand. Join our community today and let your career journey unfold!</p>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    </body>
+</html>
