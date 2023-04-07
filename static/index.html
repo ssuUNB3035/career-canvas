@@ -47,8 +47,8 @@
               </div>
           </div>
           <ul>
-              <li v-for="(option, index) in options" :key="index">
-                  <a @click="selectedOption = option">{{ option }}</a>
+              <li v-for="(currentUser_portfolio, index) in currentUser_portfolios" :key="index">
+                  <a @click="currentUser_selectedPortfolio = currentUser_portfolio">{{ currentUser_portfolio }}</a>
               </li>
           </ul>
         </div>

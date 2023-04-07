@@ -39,8 +39,8 @@ Vue.component('login-logout', {
   },
   template: `
     <div>
-      <button v-if="!authenticated" @click="login" type="button" class="btn btn-primary">Login</button>
-      <button v-if="authenticated" @click="logout" type="button" class="btn btn-primary">Logout</button>
+      <button v-if="!this.$parent.$parent.authenticated" @click="login" type="button" class="btn btn-primary">Login</button>
+      <button v-if="this.$parent.$parent.authenticated" @click="logout" type="button" class="btn btn-primary">Logout</button>
     </div>
   `
 });
@@ -100,6 +100,7 @@ Vue.component('navbar', {
     showUserSearch: true,
     showMyPortfolio: false,
     showAbout: false,
+    currentUser: {},
     users: [
       { id: 1, name: 'John Doe', bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus semper sapien eget mi tincidunt euismod.', image: 'https://via.placeholder.com/350x200', link: 'https://www.example.com/profile1' },
       { id: 2, name: 'Jane Smith', bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus semper sapien eget mi tincidunt euismod.', image: 'https://via.placeholder.com/350x200', link: 'https://www.example.com/profile2' },
@@ -107,9 +108,9 @@ Vue.component('navbar', {
       { id: 4, name: 'Alice Brown', bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus semper sapien eget mi tincidunt euismod.', image: 'https://via.placeholder.com/350x200', link: 'https://www.example.com/profile4' },
       { id: 5, name: 'Mike Lee', bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus semper sapien eget mi tincidunt euismod.', image: 'https://via.placeholder.com/350x200', link: 'https://www.example.com/profile5' },
     ],
-    selectedOption: 'Option 1',
-    options: ['Option 1', 'Option 2', 'Option 3'],
-    cardData: {
+    currentUser_selectedPortfolio: 'Option 1',
+    currentUser_portfolios: ['Option 1', 'Option 2', 'Option 3'],
+    currentUser_subEntryMap: {
     'Option 1': [
         { title: 'Card 1', description: 'This is card 1', image: 'https://via.placeholder.com/150' },
         { title: 'Card 2', description: 'This is card 2', image: 'https://via.placeholder.com/150' },
@@ -138,7 +139,7 @@ Vue.component('navbar', {
   },
   computed: {
     cards() {
-        return this.cardData[this.selectedOption];
+        return this.currentUser_subEntryMap[this.currentUser_selectedPortfolio];
     }
   },
   methods: {
@@ -174,6 +175,7 @@ Vue.component('navbar', {
             if (response.data.status == "success") {
               this.authenticated = true;
               this.loggedIn = response.data.user_id;
+              console.log(response.data)
             }
         })
         .catch(e => {
