@@ -31,31 +31,32 @@
           <!-- User Cards -->
           <div id="user-list">
             <div class="row">
-              <user-card v-for="user in users" :key="user.id" :user="user"></user-card>
+              <user-card v-for="user in users" :key="user.id" :user="user" class="col-lg-4 col-md-6 col-sm-12"></user-card>
             </div>
           </div>
         </div>
-      </div> <!-- closing div tag for showUserSearch -->
+      </div>
+      
 
       <div v-if="showMyPortfolio">
         <div class="sidebar">
           <div id="sidebarInfo" class="d-flex align-items-center p-3">
-              <img class="rounded-circle mr-2" style="width: 50px; height: auto;" src="https://img.icons8.com/nolan/256/user-default.png" alt="Profile Picture" />
-              <div>
-                  <h6 class="mb-0">{{ currentUser.displayName }}</h6>
-                  <small class="text-muted">{{ currentUser.intro }}</small>
-              </div>
+            <img class="rounded-circle mr-2" style="width: 50px; height: auto;" src="https://img.icons8.com/nolan/256/user-default.png" alt="Profile Picture" />
+            <div>
+              <h6 class="mb-0">{{ currentUser.displayName }}</h6>
+              <small class="text-muted">{{ currentUser.intro }}</small>
+            </div>
           </div>
           <ul>
-              <li v-for="(currentUser_portfolio, index) in currentUser_portfolios" :key="index">
-                  <a @click="currentUser_selectedPortfolio = currentUser_portfolio">{{ currentUser_portfolio }}</a>
-              </li>
+            <li v-for="(currentUser_portfolio, index) in currentUser_portfolios" :key="index">
+              <a @click="currentUser_selectedPortfolio = currentUser_portfolio">{{ currentUser_portfolio }}</a>
+            </li>
           </ul>
         </div>
         <div class="card-deck main">
           <div class="card-wrapper" v-for="(card, index) in cards" :key="index">
             <div class="card">
-              <img class="card-img-top" :src="card.image" :alt="card.title">
+              <img class="card-img-top" src="./resource/workPhoto.jpg">
               <div class="card-body">
                 <h5 class="card-title">{{ card.title }}</h5>
                 <p class="card-text">{{ card.content }}</p>
@@ -73,7 +74,7 @@
       </div>
     </div>
 
-      <script src="./CareerCanvas.js"></script>
+    <script src="./CareerCanvas.js"></script>
 
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
