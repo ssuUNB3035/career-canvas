@@ -100,7 +100,14 @@ Vue.component('navbar', {
     showUserSearch: true,
     showMyPortfolio: false,
     showAbout: false,
-    currentUser: {},
+    currentUser: {
+      created: null,
+      displayName: "Your Display Name",
+      intro: "Your Introduction",
+      lastUpdated: null,
+      userId: 0,
+      userName: "Your Username"
+    },
     users: [
       { id: 1, name: 'John Doe', bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus semper sapien eget mi tincidunt euismod.', image: 'https://via.placeholder.com/350x200', link: 'https://www.example.com/profile1' },
       { id: 2, name: 'Jane Smith', bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus semper sapien eget mi tincidunt euismod.', image: 'https://via.placeholder.com/350x200', link: 'https://www.example.com/profile2' },
@@ -111,7 +118,7 @@ Vue.component('navbar', {
     currentUser_selectedPortfolio: 'Option 1',
     currentUser_portfolios: ['Option 1', 'Option 2', 'Option 3'],
     currentUser_subEntryMap: {
-    'Option 1': [
+    'Cvent': [
         { title: 'Card 1', description: 'This is card 1', image: 'https://via.placeholder.com/150' },
         { title: 'Card 2', description: 'This is card 2', image: 'https://via.placeholder.com/150' },
         { title: 'Card 3', description: 'This is card 3', image: 'https://via.placeholder.com/150' },
@@ -166,6 +173,7 @@ Vue.component('navbar', {
     },
     submitForm: function() {
       if (this.username != "" && this.password != "") {
+        // Logs User in
         axios
         .post(this.serviceURL+"/user/login", {
             "username": this.username,
@@ -175,7 +183,39 @@ Vue.component('navbar', {
             if (response.data.status == "success") {
               this.authenticated = true;
               this.loggedIn = response.data.user_id;
-              console.log(response.data)
+              this.currentUser = response.data.user[0];
+
+              // Gets all the portfolios for the user
+              axios
+              .get(this.serviceURL+"/portfolio/" + this.currentUser.userId)
+              .then(response => {
+                  if (response.data.status == "success") {
+                    var portfolios = [];
+                    console.log(response.data.portfolios);
+                    var tempArray = response.data.portfolios;
+
+                    let map = {};
+                    // Puts the portfolio title in an array
+                    for (let i = 0; i < tempArray.length; i++){
+                      portfolios.push(tempArray[i].title);
+
+                      // Maps all of the subEntries to a portfolio name
+                      axios
+                      .get(this.serviceURL+"/portfolio/" + this.currentUser.userId + "/" + tempArray[i].portfolioId)
+                      .then(response => {
+                          if (response.data.status == "success") {
+                            map[tempArray[i].title] = response.data.subPortfolios;
+                          }
+                      })
+                    }
+                    this.currentUser_portfolios = portfolios;
+                    this.currentUser_selectedPortfolio = portfolios[0];
+                    this.currentUser_subEntryMap = map;
+                    console.log(this.currentUser_portfolios);
+                    console.log(portfolios[0]);
+                    console.log(this.currentUser_subEntryMap);
+                  }
+              })
             }
         })
         .catch(e => {

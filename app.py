@@ -112,9 +112,9 @@ class UserLogin(Resource):
 				
 				session['username'] = request_params['username']
 				print(session)
-				db.getOrCreateUser(session['username'])
+				result = db.getOrCreateUser(session['username'])
 				
-				response = {'status': 'success' }
+				response = {'status': 'success', 'user': result }
 				responseCode = 201
 			except LDAPException:
 				response = {'status': 'Access denied'}
@@ -212,7 +212,8 @@ class Portfolio(Resource):
 		try:
 			result = db.getPortfolio(userID)
 			print(result)
-			return make_response(jsonify(result), 200) 	
+			response = {'status': 'success', 'portfolios': result }
+			return make_response(jsonify(response), 200)
 		except:
 			return make_response(jsonify("{'status': 'fail'}"), 500) 
 
@@ -355,7 +356,8 @@ class SubPortfolio(Resource):
 			result = db.getSubPortfolios(portfolioId)
 		except:
 			abort(500)
-		return make_response(jsonify(result), 200)
+		response = {'status': 'success', 'subPortfolios': result }
+		return make_response(jsonify(response), 200)
 		
 ####################################################################################
 #
