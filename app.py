@@ -141,9 +141,14 @@ class UserLogin(Resource):
 	# DELETE: Clear session
 	#
 		if 'username' in session:
-			session.pop('username')
+			session.clear()
+			response = {'status': 'success'}
+			responseCode = 204
+		else:
+			response = {'status': 'fail'}
+			responseCode = 403
 
-		return make_response(jsonify(), 204)
+		return make_response(jsonify(response), responseCode)
 # end UserLogin
 ####################################################################################
 #
