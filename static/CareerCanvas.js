@@ -5,13 +5,22 @@ Vue.component('user-card', {
       required: true
     }
   },
+  methods: {
+    showUserPageClick() {
+      this.$parent.showUserPage = true;
+
+      this.$parent.showMyPortfolio = false;
+      this.$parent.showUserSearch = false;
+      this.$parent.showAbout = false;
+    }
+  },
   template: `
     <div class="card">
       <img class="rounded-circle mr-2" style="width: 200px; height: auto;" src="https://img.icons8.com/nolan/256/user-default.png" alt="Profile Picture" />
       <div class="card-body">
         <h5 class="card-title">{{ user.name }}</h5>
         <p class="card-text">{{ user.bio }}</p>
-        <a :href="user.link" class="btn btn-primary">View Profile</a>
+        <button @click="showUserPageClick" class="btn btn-primary">View Profile</button>
       </div>
     </div>
   `
@@ -33,8 +42,13 @@ Vue.component('login-logout', {
       this.$parent.$parent.popupVisible = true;
     },
     logout() {
-      localStorage.removeItem('token');
-      this.loggedIn = false;
+      axios
+      .delete(this.serviceURL+"/user/login")
+      .then(response => {
+          if (response.status == "success") {
+            this.$parent.$parent.authenticated = false;
+          }
+      });
     },
   },
   template: `
@@ -51,12 +65,14 @@ Vue.component('navbar', {
       this.$parent.showUserSearch = true;
       this.$parent.showMyPortfolio = false;
       this.$parent.showAbout = false;
+      this.$parent.showUserPage = false;
       console.log(this.$parent.showUserSearch);
     },
     myPortfolioClick() {
       this.$parent.showUserSearch = false;
       this.$parent.showMyPortfolio = true;
       this.$parent.showAbout = false;
+      this.$parent.showUserPage = false;
       console.log(this.$parent.showMyPortfolio);
     },
     aboutClick() {
@@ -64,6 +80,7 @@ Vue.component('navbar', {
       this.$parent.showUserSearch = false;
       this.$parent.showMyPortfolio = false;
       this.$parent.showAbout = true;
+      this.$parent.showUserPage = false;
       console.log(this.$parent.showAbout);
     },
   },
@@ -100,6 +117,7 @@ data: {
   showUserSearch: true,
   showMyPortfolio: false,
   showAbout: false,
+  showUserPage: false,
   currentUser: {
     created: null,
     displayName: "Your Display Name",
@@ -142,11 +160,50 @@ data: {
       { title: 'Card 17', description: 'This is card 17', image: 'https://via.placeholder.com/150' },
       { title: 'Card 18', description: 'This is card 18', image: 'https://via.placeholder.com/150' },
   ]
-  }
+  },
+  selectedUser: {
+    created: null,
+    displayName: "Your Display Name",
+    intro: "Your Introduction",
+    lastUpdated: null,
+    userId: 0,
+    userName: "Your Username"
+  },
+  selectedUser_selectedPortfolio: 'Portfolio #1',
+  selectedUser_portfolios: ['Portfolio #1', 'Portfolio #2', 'Portfolio #3'],
+  selectedUser_subEntryMap: {
+  'Portfolio #1': [
+      { title: 'Card 1', description: 'This is card 1', image: 'https://via.placeholder.com/150' },
+      { title: 'Card 2', description: 'This is card 2', image: 'https://via.placeholder.com/150' },
+      { title: 'Card 3', description: 'This is card 3', image: 'https://via.placeholder.com/150' },
+      { title: 'Card 4', description: 'This is card 4', image: 'https://via.placeholder.com/150' },
+      { title: 'Card 5', description: 'This is card 5', image: 'https://via.placeholder.com/150' },
+      { title: 'Card 6', description: 'This is card 6', image: 'https://via.placeholder.com/150' },
+  ],
+  'Portfolio #2': [
+      { title: 'Card 7', description: 'This is card 7', image: 'https://via.placeholder.com/150' },
+      { title: 'Card 8', description: 'This is card 8', image: 'https://via.placeholder.com/150' },
+      { title: 'Card 9', description: 'This is card 9', image: 'https://via.placeholder.com/150' },
+      { title: 'Card 10', description: 'This is card 10', image: 'https://via.placeholder.com/150' },
+      { title: 'Card 11', description: 'This is card 11', image: 'https://via.placeholder.com/150' },
+      { title: 'Card 12', description: 'This is card 12', image: 'https://via.placeholder.com/150' },
+  ],
+  'Portfolio #3': [
+      { title: 'Card 13', description: 'This is card 13', image: 'https://via.placeholder.com/150' },
+      { title: 'Card 14', description: 'This is card 14', image: 'https://via.placeholder.com/150' },
+      { title: 'Card 15', description: 'This is card 15', image: 'https://via.placeholder.com/150' },
+      { title: 'Card 16', description: 'This is card 16', image: 'https://via.placeholder.com/150' },
+      { title: 'Card 17', description: 'This is card 17', image: 'https://via.placeholder.com/150' },
+      { title: 'Card 18', description: 'This is card 18', image: 'https://via.placeholder.com/150' },
+  ]
+  },
 },
 computed: {
   cards() {
-      return this.currentUser_subEntryMap[this.currentUser_selectedPortfolio];
+      return this.selectedUser_subEntryMap[this.selectedUser_selectedPortfolio];
+  },
+  selectedUserCards() {
+      return this.selectedUser_subEntryMap[this.selectedUser_selectedPortfolio];
   }
 },
 methods: {

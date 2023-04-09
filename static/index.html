@@ -72,6 +72,34 @@
           <p>Career Canvas is a website designed for individuals to showcase their career journey through the creation and sharing of professional portfolios. Our platform provides a space for individuals to highlight their unique experiences, skills, and accomplishments, allowing them to stand out in today's competitive job market. Whether you're a recent graduate just starting out, a seasoned professional looking to make a career change, or someone in between, Career Canvas offers an easy and effective way to create a portfolio that represents you and your professional brand. Join our community today and let your career journey unfold!</p>
         </div>
       </div>
+      
+      <div v-if="showUserPage">
+        <div class="sidebar">
+          <div id="sidebarInfo" class="d-flex align-items-center p-3">
+            <img class="rounded-circle mr-2" style="width: 50px; height: auto;" src="https://img.icons8.com/nolan/256/user-default.png" alt="Profile Picture" />
+            <div>
+              <h6 class="mb-0">{{ selectedUser.displayName }}</h6>
+              <small class="text-muted">{{ selectedUser.intro }}</small>
+            </div>
+          </div>
+          <ul>
+            <li v-for="(selectedUser_portfolio, index) in selectedUser_portfolios" :key="index">
+              <a @click="selectedUser_selectedPortfolio = selectedUser_portfolio">{{ selectedUser_portfolio }}</a>
+            </li>
+          </ul>
+        </div>
+        <div class="card-deck main">
+          <div class="card-wrapper" v-for="(card, index) in selectedUserCards" :key="index">
+            <div class="card">
+              <img class="card-img-top" src="./resource/workPhoto.jpg">
+              <div class="card-body">
+                <h5 class="card-title">{{ card.title }}</h5>
+                <p class="card-text">{{ card.content }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="./CareerCanvas.js"></script>
