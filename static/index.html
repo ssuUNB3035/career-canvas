@@ -25,6 +25,44 @@
         </form>
       </div>
 
+      <div v-if="popupVisible" class="popup" @click.self="closePopup">
+        <form>
+          <div class="form-group">
+            <label for="displayName">Display Name</label>
+            <input type="text" class="form-control" id="displayName" v-model="newDisplayName" placeholder="Enter new display name">
+          </div>
+          <div class="form-group">
+            <label for="introduction">Introduction</label>
+            <input type="text" class="form-control" id="introduction" v-model="newIntroduction" placeholder="Enter new introduction">
+          </div>
+          <div class="form-group">
+            <label for="portfolio">Portfolio</label>
+            <select class="form-control" id="portfolio" v-model="selectedPortfolio">
+              <option v-for="(portfolio, index) in portfolios" :value="index">{{ portfolio.title }}</option>
+            </select>
+            <button type="button" class="btn btn-secondary" @click="addPortfolio">Add Portfolio</button>
+          </div>
+          <div class="form-group">
+            <label for="card">Card</label>
+            <select class="form-control" id="card" v-model="selectedCard">
+              <option v-for="(card, index) in selectedPortfolioCards" :value="index">{{ card.title }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="cardTitle">Card Title</label>
+            <input type="text" class="form-control" id="cardTitle" v-model="selectedCardTitle" placeholder="Enter new card title">
+          </div>
+          <div class="form-group">
+            <label for="cardDescription">Card Description</label>
+            <input type="text" class="form-control" id="cardDescription" v-model="selectedCardDescription" placeholder="Enter new card description">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="closePopup">Close</button>
+            <button type="button" class="btn btn-primary" @click="saveChanges">Save changes</button>
+          </div>
+        </form>
+      </div>
+
       <div v-if="showUserSearch">
         <!-- Page Content -->
         <div class="container my-4">
@@ -72,9 +110,12 @@
           <p>Career Canvas is a website designed for individuals to showcase their career journey through the creation and sharing of professional portfolios. Our platform provides a space for individuals to highlight their unique experiences, skills, and accomplishments, allowing them to stand out in today's competitive job market. Whether you're a recent graduate just starting out, a seasoned professional looking to make a career change, or someone in between, Career Canvas offers an easy and effective way to create a portfolio that represents you and your professional brand. Join our community today and let your career journey unfold!</p>
         </div>
       </div>
-      
+
       <div v-if="showUserPage">
         <div class="sidebar">
+          <div v-if="showUserEditPopup">
+            
+          </div>
           <div id="sidebarInfo" class="d-flex align-items-center p-3">
             <img class="rounded-circle mr-2" style="width: 50px; height: auto;" src="https://img.icons8.com/nolan/256/user-default.png" alt="Profile Picture" />
             <div>

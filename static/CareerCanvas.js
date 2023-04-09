@@ -50,12 +50,16 @@ Vue.component('login-logout', {
           }
       });
     },
+    showEditPopup() {
+      this.$parent.$parent.showUserEditPopup = true;
+    }
   },
   template: `
     <div>
       <button v-if="!this.$parent.$parent.authenticated" @click="login" type="button" class="btn btn-primary">Login</button>
+      <button v-if="this.$parent.$parent.authenticated" @click="showEditPopup" class="btn btn-primary">Edit Profile/Portfolios</button>
       <button v-if="this.$parent.$parent.authenticated" @click="logout" type="button" class="btn btn-primary">Logout</button>
-    </div>
+      </div>
   `
 });
 
@@ -118,6 +122,7 @@ data: {
   showMyPortfolio: false,
   showAbout: false,
   showUserPage: false,
+  showUserEditPopup: false,
   currentUser: {
     created: null,
     displayName: "Your Display Name",
@@ -227,6 +232,9 @@ methods: {
   },
   closePopup: function() {
     this.popupVisible = false;
+  },
+  showEditPopup: function() {
+    this.showUserEditPopup = true;
   },
   submitForm: function() {
     if (this.username != "" && this.password != "") {
