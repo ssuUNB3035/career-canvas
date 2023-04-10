@@ -209,7 +209,8 @@ class Users(Resource):
 	
 	def get(self):
 	# GET: Gets a user profile
-			response = db.getAllUsers()
+			result = db.getAllUsers()
+			response = {"status": "success", "users": result}
 			return make_response(jsonify(response), 200) 
 
 #end Users

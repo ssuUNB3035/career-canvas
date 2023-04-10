@@ -29,21 +29,59 @@ Vue.component('user-card', {
     }
   },
   methods: {
-    showUserPageClick() {
+    showUserPageClick(user) {
+      // Set page variables
       this.$parent.showUserPage = true;
 
       this.$parent.showMyPortfolio = false;
       this.$parent.showUserSearch = false;
       this.$parent.showAbout = false;
+
+      //Set the user info
+      this.$parent.selectedUser = user;
+
+      //Get user information
+      // Gets all the portfolios for the user
+      axios
+      .get(this.$parent.serviceURL+"/portfolio/" + this.$parent.selectedUser.userId)
+      .then(response => {
+          if (response.data.status == "success") {
+            var portfolios = [];
+            var tempArray = response.data.portfolios;
+
+            let map = {};
+
+            // Puts the portfolio title in an array
+            for (let i = 0; i < tempArray.length; i++){
+              portfolios.push(tempArray[i].title);
+
+              // Maps all of the subEntries to a portfolio name
+              axios
+              .get(this.$parent.serviceURL+"/portfolio/" + this.$parent.selectedUser.userId + "/" + tempArray[i].portfolioId)
+              .then(response => {
+                  if (response.data.status == "success") {
+                    map[tempArray[i].title] = response.data.subPortfolios;
+                  }
+              })
+            }
+            this.$parent.selectedUser_portfolios = portfolios;
+            this.$parent.selectedUser_selectedPortfolio = portfolios[0];
+            this.$parent.selectedUser_subEntryMap = map;
+            console.log(this.$parent.selectedUser_portfolios);
+          }
+      })
+      .catch(e => {
+        console.log(e);
+      });
     }
   },
   template: `
     <div class="card">
       <img class="rounded-circle mr-2" style="width: 200px; height: auto;" src="https://img.icons8.com/nolan/256/user-default.png" alt="Profile Picture" />
       <div class="card-body">
-        <h5 class="card-title">{{ user.name }}</h5>
-        <p class="card-text">{{ user.bio }}</p>
-        <a @click="showUserPageClick" class="btn btn-primary">View Profile</a>
+        <h5 class="card-title">{{ user.displayName }}</h5>
+        <p class="card-text">{{ user.intro }}</p>
+        <a @click="showUserPageClick(user)" class="btn btn-primary">View Profile</a>
       </div>
     </div>
   `
@@ -227,6 +265,23 @@ data: {
   ]
   },
 },
+mounted() {
+  axios
+  .get(this.serviceURL + "/users")
+  .then(response => {
+    console.log(response);
+    if (response.status == 200) {
+      this.users = response.data.users;
+    }
+    console.log("Here are the users1:");
+    console.log(this.users);
+  })
+  .catch(e => {
+    console.log(e);
+  });
+  console.log("Here are the users");
+  console.log(this.users);
+},
 computed: {
   cards() {
       return this.currentUser_subEntryMap[this.currentUser_selectedPortfolio];
@@ -320,12 +375,13 @@ methods: {
                   console.log(this.currentUser_portfolios);
                 }
             })
+            .catch(e => {
+              console.log(e);
+            });
           }
       })
       .catch(e => {
-          alert("The username or password was incorrect, try again");
-          this.input.password = "";
-          console.log(e);
+        console.log(e);
       });
     } else {
       alert("A username and password must be present");
@@ -349,7 +405,7 @@ methods: {
           }
       })
       .catch(e => {
-        alert("Something wrong happened...");
+        console.log(e);
     });
 
     this.profileEditPopup = false;
@@ -387,6 +443,9 @@ methods: {
           // Cheeky refresh 
           this.currentUser_portfolios.push("reloading...");
           this.currentUser_portfolios.pop();
+        })
+        .catch(e => {
+          console.log(e);
         });
     }
   },
