@@ -381,7 +381,7 @@ api.add_resource(Root,'/')
 api.add_resource(API,'/dev')
 api.add_resource(UserLogin, '/user/login')
 api.add_resource(User, '/user/<string:userID>') 
-api.add_resource(User, '/users')
+api.add_resource(Users, '/users')
 
 api.add_resource(Portfolio, '/portfolio/<string:userID>')
 api.add_resource(SubPortfolio, '/portfolio/<string:userID>/<int:portfolioId>')
