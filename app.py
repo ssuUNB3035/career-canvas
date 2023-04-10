@@ -202,6 +202,19 @@ class User(Resource):
 #end User
 ####################################################################################
 #
+# User: #/users
+# 	GET Gets a list of all users
+#
+class Users(Resource):
+	
+	def get(self):
+	# GET: Gets a user profile
+			response = db.getAllUsers()
+			return make_response(jsonify(response), 200) 
+
+#end Users
+####################################################################################
+#
 # Portfolio: #/portfolio/<string:userID>
 # 	GET Gets a user portfolio
 #	PUT Updates a user portfolio
@@ -232,7 +245,7 @@ class Portfolio(Resource):
 			request_params = parser.parse_args()
 			#print(request_params)
 			print(userID)
-			result = db.addPortfolio(userID, request_params['title'])
+			result = db.addPortfolio(db.getUser(userID)['id'], request_params['title'])
 		except:
 			abort(500)
 		return make_response(jsonify(result), 200)
@@ -253,11 +266,10 @@ class Portfolio(Resource):
 			parser.add_argument('title', type=str, required=True)
 			request_params = parser.parse_args()
 			
-			result = db.updatePortfolio(userID, request_params['portfolioId'], request_params['title'])
+			result = db.updatePortfolio(db.getUser(userID)['id'], request_params['portfolioId'], request_params['title'])
 		except:
 			abort(500)
 		
-		response = {'status': 'success', 'stuff': result }
 		return make_response(jsonify(result), 200)
 
 	def delete(self, userID):
@@ -271,10 +283,10 @@ class Portfolio(Resource):
 
 		parser = reqparse.RequestParser()
 		try:
-			parser.add_argument('portfolioId', type=str, required=True)
+			parser.add_argument('id', type=str, required=True)
 			request_params = parser.parse_args()
 			#print(request_params)
-			result = db.deletePortfolio(userID, request_params['portfolioId'])
+			result = db.deletePortfolio(db.getUser(userID)['id'], request_params['id'])
 		except:
 			abort(500)
 		return make_response(jsonify(result), 200)
@@ -282,7 +294,8 @@ class Portfolio(Resource):
 #end Portfolio
 ####################################################################################
 #
-# SubPortfolio: #/portfolio/<string:userID>/subportfolio
+# SubPortfolio: #/portfolio/<string:userID>/<int:portfolioId>
+
 # 	GET Gets a user subportfolio
 #	PUT Updates a user subportfolio
 #	POST Creates a user subportfolio
@@ -368,6 +381,7 @@ api.add_resource(Root,'/')
 api.add_resource(API,'/dev')
 api.add_resource(UserLogin, '/user/login')
 api.add_resource(User, '/user/<string:userID>') 
+api.add_resource(Users, '/users')
 
 api.add_resource(Portfolio, '/portfolio/<string:userID>')
 api.add_resource(SubPortfolio, '/portfolio/<string:userID>/<int:portfolioId>')
@@ -389,26 +403,3 @@ if __name__ == "__main__":
 		port=settings.APP_PORT,
 		ssl_context=context,
 		debug=settings.APP_DEBUG)
-
-####################################################################################
-#
-# : #
-# 	GET
-#	POST
-#	PUT
-#	DELETE
-#
-class x(Resource):
-	def get(self):
-		return
-	
-	def post(self):
-		return
-	
-	def put(self):
-		return
-	
-	def delete(self):
-		return
-
-#end x
