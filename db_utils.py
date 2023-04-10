@@ -165,6 +165,7 @@ def updatePortfolio(user_id, portfolio_id, title):
 	try:
 		with dbConnection.cursor() as cursor:
 			cursor.callproc('updatePortfolio', (user_id, portfolio_id, title))
+			dbConnection.commit()
 			result = cursor.fetchone()
 			
 			return result

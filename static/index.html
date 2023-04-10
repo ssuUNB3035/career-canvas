@@ -36,6 +36,43 @@
         </form>
       </div>
 
+      <div v-if="portfolioEditPopup" class="popup" @click.self="closePortfolioEditPopup">
+        <form class="popup-form" @submit.prevent="submitForm">
+          <label>Delete or rename a portfolio:</label>
+          <div>
+            <select v-model="selectedCurrentUserPortfolio">
+              <option disabled value="">Please select one</option>
+              <option v-for="option in currentUser_portfolios" :value="option">{{ option }}</option>
+            </select>
+            </br>
+            <div>
+              <input type="text" placeholder="Enter new Portfolio name" v-model="newPortfolioTitle" />
+            </div>
+            </br>
+            <div class="button-container">
+              <button type="button" class="btn btn-danger" data-dismiss="modal" @click="deletePortfolio">Delete portfolio</button>
+              <button type="button" class="btn btn-primary" @click="renamePortfolio">Rename Portfolio</button>
+            </div>
+          </div>
+          </br>
+          </br>
+          <div>
+            <label>Add a new portfolio:</label>
+            <div>
+              <input type="text" placeholder="Enter new portfolio name" v-model="addPortfolioTitle" />
+            </div>
+            </br>
+            <div class="button-container">
+              <button type="button" class="btn btn-primary" @click="addPortfolio">Add Portfolio</button>
+            </div>
+          </div>
+        </br>
+          <div class="button-container">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="closePortfolioEditPopup">Close</button>
+          </div>
+        </form>
+      </div>
+
       <div v-if="showUserSearch">
         <!-- Page Content -->
         <div class="container my-4">
@@ -58,11 +95,7 @@
               <small class="text-muted">{{ currentUser.intro }}</small>
             </div>
           </div>
-          <ul>
-            <li v-for="(currentUser_portfolio, index) in currentUser_portfolios" :key="index">
-              <a @click="currentUser_selectedPortfolio = currentUser_portfolio">{{ currentUser_portfolio }}</a>
-            </li>
-          </ul>
+          <portfolio-nav></portfolio-nav>
         </div>
         <div class="card-deck main">
           <div class="card-wrapper" v-for="(card, index) in cards" :key="index">
@@ -83,11 +116,6 @@
           <p>Career Canvas is a website designed for individuals to showcase their career journey through the creation and sharing of professional portfolios. Our platform provides a space for individuals to highlight their unique experiences, skills, and accomplishments, allowing them to stand out in today's competitive job market. Whether you're a recent graduate just starting out, a seasoned professional looking to make a career change, or someone in between, Career Canvas offers an easy and effective way to create a portfolio that represents you and your professional brand. Join our community today and let your career journey unfold!</p>
         </div>
       </div>
-<<<<<<< HEAD
-
-=======
-      
->>>>>>> 193d9a868419c6a22d4c94717d1b3a414bef3837
       <div v-if="showUserPage">
         <div class="sidebar">
           <div id="sidebarInfo" class="d-flex align-items-center p-3">

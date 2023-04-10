@@ -1,3 +1,26 @@
+Vue.component('portfolio-nav', {
+  computed: {
+    currentUser_portfolios() {
+      return this.$parent.currentUser_portfolios;
+    },
+    portfolioKey() {
+      return this.$parent.currentUser_portfolios.length;
+    }
+  },
+  methods: {
+    setCurrentPortfolio(currentUser_portfolio) {
+      this.$parent.currentUser_selectedPortfolio = currentUser_portfolio;
+    }
+  },
+  template: `
+    <ul style="max-height: 60vh; overflow-y: auto;">
+      <li v-for="(currentUser_portfolio, index) in this.$parent.currentUser_portfolios">
+        <a @click="setCurrentPortfolio(currentUser_portfolio)">{{ currentUser_portfolio }}</a>
+      </li>
+    </ul>
+  `
+});
+
 Vue.component('user-card', {
   props: {
     user: {
@@ -49,11 +72,15 @@ Vue.component('login-logout', {
     showProfileEditPopup() {
       this.parentParent.profileEditPopup = true;
     },
+    showPortfolioEditPopup() {
+      this.parentParent.portfolioEditPopup = true;
+    }
   },
   template: `
     <div>
       <button v-if="!this.$parent.$parent.authenticated" @click="login" type="button" class="btn btn-primary">Login</button>
       <button v-if="this.$parent.$parent.authenticated" @click="showProfileEditPopup" type="button" class="btn btn-primary">Edit Profile</button>
+      <button v-if="this.$parent.$parent.authenticated" @click="showPortfolioEditPopup" type="button" class="btn btn-primary">Edit Portfolios</button>
       <button v-if="this.$parent.$parent.authenticated" @click="logout" type="button" class="btn btn-primary">Logout</button>
     </div>
   `
@@ -109,6 +136,10 @@ data: {
   loggedIn: null,
   popupVisible: false,
   profileEditPopup: false,
+  portfolioEditPopup: false,
+  newPortfolioTitle: "",
+  selectedCurrentUserPortfolio: "Portfolio #1",
+  addPortfolioTitle: "",
   username: '',
   password: '',
   showUserSearch: true,
@@ -158,6 +189,7 @@ data: {
       { title: 'Card 18', description: 'This is card 18', image: 'https://via.placeholder.com/150' },
   ]
   },
+  allCurrentUserPortfolios: {},
   selectedUser: {
     created: null,
     displayName: "Your Display Name",
@@ -236,6 +268,12 @@ methods: {
   closeProfileEditPopup: function() {
     this.profileEditPopup = false;
   },
+  showPortfolioEditPopup: function() {
+    this.portfolioEditPopup = true;
+  },
+  closePortfolioEditPopup: function() {
+    this.portfolioEditPopup = false;
+  },
   submitForm: function() {
     if (this.username != "" && this.password != "") {
 
@@ -256,6 +294,7 @@ methods: {
             .get(this.serviceURL+"/portfolio/" + this.currentUser.userId)
             .then(response => {
                 if (response.data.status == "success") {
+                  this.allCurrentUserPortfolios = response.data.portfolios;
                   var portfolios = [];
                   var tempArray = response.data.portfolios;
 
@@ -276,7 +315,9 @@ methods: {
                   }
                   this.currentUser_portfolios = portfolios;
                   this.currentUser_selectedPortfolio = portfolios[0];
+                  this.selectedCurrentUserPortfolio = portfolios[0];
                   this.currentUser_subEntryMap = map;
+                  console.log(this.currentUser_portfolios);
                 }
             })
           }
@@ -303,16 +344,93 @@ methods: {
         "media_id": "0"
       })
       .then(response => {
-          if (response.data.status == "Success") {
-            console.log("yay!");
+          if (response.status == 200) {
+            alert("Saved profile changes!");
           }
       })
       .catch(e => {
         alert("Something wrong happened...");
-        console.log(e);
     });
 
     this.profileEditPopup = false;
+  },
+  renamePortfolio() {
+    let selectedPortfolioId = "";
+
+    this.allCurrentUserPortfolios.forEach(p => {
+      if (p.title == this.selectedCurrentUserPortfolio) {
+        selectedPortfolioId = p.portfolioId;
+      }
+    });
+
+    if (selectedPortfolioId != "") {
+      axios
+        .put(this.serviceURL+"/portfolio/" + this.currentUser.userId, {
+          "portfolioId": selectedPortfolioId,
+          "title": this.newPortfolioTitle
+        })
+        .then(response => {
+          if (response.status == 200) {
+            // Replace data with new
+            let tempPortfolios = this.currentUser_portfolios;
+            for(let i = 0; i < tempPortfolios.length; i++) {
+              if (tempPortfolios[i] == this.selectedCurrentUserPortfolio) {
+                tempPortfolios[i] = this.newPortfolioTitle;
+              }
+            }
+            this.currentUser_portfolios = tempPortfolios;
+
+            this.currentUser_subEntryMap[this.newPortfolioTitle] = this.currentUser_subEntryMap[this.selectedCurrentUserPortfolio];
+            delete this.currentUser_subEntryMap[this.selectedCurrentUserPortfolio];
+          }
+          
+          // Cheeky refresh 
+          this.currentUser_portfolios.push("reloading...");
+          this.currentUser_portfolios.pop();
+        });
+    }
+  },
+  addPortfolio() {
+    axios
+      .post(this.serviceURL+"/portfolio/" + this.currentUser.userId, {
+        "title": this.addPortfolioTitle
+      })
+      .then(response => {
+        if (response.status == 200) {
+          this.currentUser_portfolios.push(this.addPortfolioTitle);
+          this.currentUser_subEntryMap[this.addPortfolioTitle] = [];
+        }
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  },
+  deletePortfolio() {
+    let selectedPortfolioId = "";
+
+    this.allCurrentUserPortfolios.forEach(p => {
+      if (p.title == this.selectedCurrentUserPortfolio) {
+        selectedPortfolioId = p.portfolioId;
+      }
+    });
+
+    console.log(selectedPortfolioId);
+    axios
+      .delete(this.serviceURL+"/portfolio/" + this.currentUser.userId, {
+        "portfolioId": selectedPortfolioId
+      })
+      .then(response => {
+        if (response.status == 200) {
+          const index = this.currentUser_portfolios.indexOf(this.selectedCurrentUserPortfolio);
+          if (index > -1) {
+            this.currentUser_portfolios.splice(index, 1);
+          }
+          delete this.currentUser_subEntryMap[this.selectedCurrentUserPortfolio];
+        }
+      })
+      .catch(e => {
+        console.log(e);
+      });
   }
   }
 });

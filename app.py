@@ -232,7 +232,7 @@ class Portfolio(Resource):
 			request_params = parser.parse_args()
 			#print(request_params)
 			print(userID)
-			result = db.addPortfolio(db.getUser(userID)['id'], request_params['title'])
+			result = db.addPortfolio(userID, request_params['title'])
 		except:
 			abort(500)
 		return make_response(jsonify(result), 200)
@@ -253,10 +253,11 @@ class Portfolio(Resource):
 			parser.add_argument('title', type=str, required=True)
 			request_params = parser.parse_args()
 			
-			result = db.updatePortfolio(db.getUser(userID)['id'], request_params['portfolioId'], request_params['title'])
+			result = db.updatePortfolio(userID, request_params['portfolioId'], request_params['title'])
 		except:
 			abort(500)
 		
+		response = {'status': 'success', 'stuff': result }
 		return make_response(jsonify(result), 200)
 
 	def delete(self, userID):
@@ -270,10 +271,10 @@ class Portfolio(Resource):
 
 		parser = reqparse.RequestParser()
 		try:
-			parser.add_argument('id', type=str, required=True)
+			parser.add_argument('portfolioId', type=str, required=True)
 			request_params = parser.parse_args()
 			#print(request_params)
-			result = db.deletePortfolio(db.getUser(userID)['id'], request_params['id'])
+			result = db.deletePortfolio(userID, request_params['portfolioId'])
 		except:
 			abort(500)
 		return make_response(jsonify(result), 200)
