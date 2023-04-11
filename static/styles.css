@@ -60,68 +60,68 @@
   }
 
   .sidebar {
-        background-color: #f1f1f1;
-        height: 100%;
-        position: fixed;
-        left: 0;
-        top: 80px;
-        width: 250px;
-        z-index: 1;
-        padding: 20px;
-        overflow-x: hidden;
-        transition: all 0.3s;
-    }
-    
-    .sidebar a {
-        display: block;
-        color: black;
-        padding: 16px;
-        text-decoration: none;
-    }
-    
-    .sidebar a:hover {
-        background-color: #ddd;
-        color: black;
-    }
-
-    .sidebar ul {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-    }
-    
-    .main {
-        margin-left: 250px;
-        padding: 20px;
-    }
-    
-    .card-deck {
-        display: flex;
-        flex-wrap: wrap;
-        margin-bottom: 20px;
-    }
-
-    .card-wrapper {
-        max-width: 33%;
-        padding: 0 10px;
-        box-sizing: border-box;
-    }
-
-    .card {
-        width: 100%;
-        border: none;
-        border-radius: 0;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    }
-
-    .card-img-top {
-        height: 200px;
-        object-fit: cover;
-        border-radius: 0;
-    }
-
-    .button-container {
+      background-color: #f1f1f1;
+      height: 100%;
+      position: fixed;
+      left: 0;
+      top: 80px;
+      width: 250px;
+      z-index: 1;
+      padding: 20px;
+      overflow-x: hidden;
+      transition: all 0.3s;
+  }
+  
+  .sidebar a {
       display: block;
-      margin-top: 10px;
-    }
+      color: black;
+      padding: 16px;
+      text-decoration: none;
+  }
+  
+  .sidebar a:hover {
+      background-color: #ddd;
+      color: black;
+  }
+
+  .sidebar ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+  }
+  
+  .main {
+      margin-left: 250px;
+      padding: 20px;
+  }
+  
+  .card-deck {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+  }
+
+  .card-wrapper {
+      max-width: 33%;
+      padding: 0 10px;
+      box-sizing: border-box;
+  }
+
+  .card {
+      width: 100%;
+      border: none;
+      border-radius: 0;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .card-img-top {
+      height: 200px;
+      object-fit: cover;
+      border-radius: 0;
+  }
+
+  .button-container {
+    display: block;
+    margin-top: 10px;
+  }

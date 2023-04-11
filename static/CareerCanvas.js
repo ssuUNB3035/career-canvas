@@ -57,7 +57,7 @@ Vue.component('user-card', {
 
               // Maps all of the subEntries to a portfolio name
               axios
-              .get(this.$parent.serviceURL+"/portfolio/" + this.$parent.selectedUser.userId + "/" + tempArray[i].portfolioId)
+              .get(this.$parent.serviceURL+"/portfolio/" + this.$parent.selectedUser.userId + "/subportfolio/" + tempArray[i].portfolioId)
               .then(response => {
                   if (response.data.status == "success") {
                     map[tempArray[i].title] = response.data.subPortfolios;
@@ -106,12 +106,26 @@ Vue.component('login-logout', {
     logout() {
       localStorage.removeItem('token');
       this.loggedIn = false;
+      axios
+      .delete(this.parentParent.serviceURL+"/user/login")
+      .then(response => { 
+        if (response.status == 204) {
+          alert("You have successfully logged out!");
+          this.parentParent.authenticated = false;
+        }
+        else {
+          alert("Something went wrong...");
+        }
+      });
     },
     showProfileEditPopup() {
       this.parentParent.profileEditPopup = true;
     },
     showPortfolioEditPopup() {
       this.parentParent.portfolioEditPopup = true;
+    },
+    showEntryEditPopup() {
+      this.parentParent.entryEditPopup = true;
     }
   },
   template: `
@@ -119,6 +133,7 @@ Vue.component('login-logout', {
       <button v-if="!this.$parent.$parent.authenticated" @click="login" type="button" class="btn btn-primary">Login</button>
       <button v-if="this.$parent.$parent.authenticated" @click="showProfileEditPopup" type="button" class="btn btn-primary">Edit Profile</button>
       <button v-if="this.$parent.$parent.authenticated" @click="showPortfolioEditPopup" type="button" class="btn btn-primary">Edit Portfolios</button>
+      <button v-if="this.$parent.$parent.authenticated" @click="showEntryEditPopup" type="button" class="btn btn-primary">Edit Portfolio entries</button>
       <button v-if="this.$parent.$parent.authenticated" @click="logout" type="button" class="btn btn-primary">Logout</button>
     </div>
   `
@@ -175,8 +190,15 @@ data: {
   popupVisible: false,
   profileEditPopup: false,
   portfolioEditPopup: false,
+  entryEditPopup: false,
   newPortfolioTitle: "",
   selectedCurrentUserPortfolio: "Portfolio #1",
+  selectedCurrentUserEntry: "",
+  newEntryTitle: "",
+  newEntryDescription: "",
+  addEntryTitle: "",
+  addEntryDescription: "",
+  selectedPortfolioForEntryAddition: "",
   addPortfolioTitle: "",
   username: '',
   password: '',
@@ -329,6 +351,12 @@ methods: {
   closePortfolioEditPopup: function() {
     this.portfolioEditPopup = false;
   },
+  showEntryEditPopup: function() {
+    this.entryEditPopup = true;
+  },
+  closeEntryEditPopup: function() {
+    this.entryEditPopup = false;
+  },
   submitForm: function() {
     if (this.username != "" && this.password != "") {
 
@@ -361,7 +389,7 @@ methods: {
 
                     // Maps all of the subEntries to a portfolio name
                     axios
-                    .get(this.serviceURL+"/portfolio/" + this.currentUser.userId + "/" + tempArray[i].portfolioId)
+                    .get(this.serviceURL+"/portfolio/" + this.currentUser.userId + "/subportfolio/" + tempArray[i].portfolioId)
                     .then(response => {
                         if (response.data.status == "success") {
                           map[tempArray[i].title] = response.data.subPortfolios;
@@ -435,6 +463,7 @@ methods: {
               }
             }
             this.currentUser_portfolios = tempPortfolios;
+            this.selectedCurrentUserPortfolio = newPortfolioTitle;
 
             this.currentUser_subEntryMap[this.newPortfolioTitle] = this.currentUser_subEntryMap[this.selectedCurrentUserPortfolio];
             delete this.currentUser_subEntryMap[this.selectedCurrentUserPortfolio];
@@ -448,6 +477,9 @@ methods: {
           console.log(e);
         });
     }
+    else {
+      alert("Cannot find portfolio to rename, please re-login and try again.");
+    }
   },
   addPortfolio() {
     axios
@@ -456,6 +488,8 @@ methods: {
       })
       .then(response => {
         if (response.status == 200) {
+          console.log(response);
+          this.allCurrentUserPortfolios.push(response.data[0]);
           this.currentUser_portfolios.push(this.addPortfolioTitle);
           this.currentUser_subEntryMap[this.addPortfolioTitle] = [];
         }
@@ -475,21 +509,50 @@ methods: {
 
     console.log(selectedPortfolioId);
     axios
-      .delete(this.serviceURL+"/portfolio/" + this.currentUser.userId, {
-        "portfolioId": selectedPortfolioId
-      })
+      .delete(this.serviceURL+"/portfolio/" + this.currentUser.userId + "/" + selectedPortfolioId)
       .then(response => {
         if (response.status == 200) {
+          console.log(response);
           const index = this.currentUser_portfolios.indexOf(this.selectedCurrentUserPortfolio);
           if (index > -1) {
             this.currentUser_portfolios.splice(index, 1);
           }
           delete this.currentUser_subEntryMap[this.selectedCurrentUserPortfolio];
+
+          this.selectedCurrentUserPortfolio = this.currentUser_portfolios[0];
         }
       })
       .catch(e => {
         console.log(e);
       });
+  },
+  deleteEntry() {
+
+  },
+  updateEntry() {
+
+  },
+  addEntry() {
+    let selectedPortfolioId = "";
+
+    this.allCurrentUserPortfolios.forEach(p => {
+      if (p.title == this.selectedPortfolioForEntryAddition) {
+        selectedPortfolioId = p.portfolioId;
+      }
+    });
+
+    axios
+      .post(this.serviceURL + "/portfolio/" + this.currentUser.userId + "/subportfolio/" + selectedPortfolioId, {
+        "portfolioId": selectedPortfolioId,
+        "title": this.addEntryTitle,
+        "content": this.addEntryDescription
+      })
+      .then(response => {
+        console.log(response);
+        if (response.status == 200) {
+          this.currentUser_subEntryMap[this.selectedPortfolioForEntryAddition].push(response.data)
+        }
+      })
   }
   }
 });

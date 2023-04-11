@@ -176,7 +176,7 @@ def updatePortfolio(user_id, portfolio_id, title):
 		cursor.close()
 		dbConnection.close()
 
-def addSubPortfolio(portfolioId):
+def addSubPortfolio(portfolioId, title, content):
 	dbConnection = pymysql.connect(settings.DBHOST,
 										settings.DBUSER,
 										settings.DBPASSWD,
@@ -186,7 +186,7 @@ def addSubPortfolio(portfolioId):
 
 	try:
 		with dbConnection.cursor() as cursor:
-			cursor.callproc('addSubPortfolio', (portfolioId,))
+			cursor.callproc('addSubPortfolio', (portfolioId,title, content))
 			result = cursor.fetchone()
 			dbConnection.commit()
 	except Exception as e:

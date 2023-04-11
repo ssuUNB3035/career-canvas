@@ -141,9 +141,14 @@ class UserLogin(Resource):
 	# DELETE: Clear session
 	#
 		if 'username' in session:
-			session.pop('username')
+			session.clear()
+			response = {'status': 'success'}
+			responseCode = 204
+		else:
+			response = {'status': 'fail'}
+			responseCode = 403
 
-		return make_response(jsonify(), 204)
+		return make_response(jsonify(response), responseCode)
 # end UserLogin
 ####################################################################################
 #
@@ -221,7 +226,7 @@ class Users(Resource):
 #	PUT Updates a user portfolio
 #	POST Creates a user portfolio
 #
-class Portfolio(Resource):
+class Portfolios(Resource):
 	def get(self, userID):
 		try:
 			result = db.getPortfolio(userID)
@@ -274,21 +279,18 @@ class Portfolio(Resource):
 		response = {'status': 'success', 'stuff': result }
 		return make_response(jsonify(result), 200)
 
-	def delete(self, userID):
+# Portfolio: #/portfolio/<string:userID>/<string:portfolioId>
+# 	DELETE delete a user portfolio
+class Portfolio(Resource):
+	def delete(self, userID, portfolioId):
 		if not auth():
 			response = {'status': 'fail'}
 			responseCode = 403
 			return make_response(jsonify(response), responseCode)
 
-		if not request.json:
-			abort(404)
-
-		parser = reqparse.RequestParser()
 		try:
-			parser.add_argument('portfolioId', type=str, required=True)
-			request_params = parser.parse_args()
 			#print(request_params)
-			result = db.deletePortfolio(userID, request_params['portfolioId'])
+			result = db.deletePortfolio(userID, portfolioId)
 		except:
 			abort(500)
 		return make_response(jsonify(result), 200)
@@ -303,18 +305,19 @@ class Portfolio(Resource):
 #	DELETE deletes a user subportfolio
 #
 class SubPortfolio(Resource):
-	def post(self, userID):
-		if not request.json:
-			abort(404) # bad request
+	def post(self, userID, portfolioId):
+		# if not request.json:
+		# 	abort(404) # bad request
 		
 		parser = reqparse.RequestParser()
 		try:
  			# Check for required attributes in json document, create a dictionary
-			parser.add_argument('portfolioId', type=int, required=True)
+			parser.add_argument('title', type=str, required=True)
+			parser.add_argument('content', type=str, required=True)
 			
 			request_params = parser.parse_args()
 			print(request_params)
-			response = db.addSubPortfolio(request_params['portfolioId'])
+			response = db.addSubPortfolio(portfolioId, request_params['title'], request_params['content'])
 		except:
 			abort(400) # bad request
 
@@ -384,8 +387,9 @@ api.add_resource(UserLogin, '/user/login')
 api.add_resource(User, '/user/<string:userID>') 
 api.add_resource(Users, '/users')
 
-api.add_resource(Portfolio, '/portfolio/<string:userID>')
-api.add_resource(SubPortfolio, '/portfolio/<string:userID>/<int:portfolioId>')
+api.add_resource(Portfolios, '/portfolio/<string:userID>')
+api.add_resource(Portfolio, '/portfolio/<string:userID>/<int:portfolioId>')
+api.add_resource(SubPortfolio, '/portfolio/<string:userID>/subportfolio/<int:portfolioId>')
 
 #api.add_resource(UserPost, '/user/<string:userID>/user_post') 
 #api.add_resource(Connection, '/user/string:<userID>/connection')

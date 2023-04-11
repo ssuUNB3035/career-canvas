@@ -44,18 +44,19 @@
               <option disabled value="">Please select one</option>
               <option v-for="option in currentUser_portfolios" :value="option">{{ option }}</option>
             </select>
-            </br>
+            <br/>
             <div>
               <input type="text" placeholder="Enter new Portfolio name" v-model="newPortfolioTitle" />
             </div>
-            </br>
+            <br/>
             <div class="button-container">
               <button type="button" class="btn btn-danger" data-dismiss="modal" @click="deletePortfolio">Delete portfolio</button>
               <button type="button" class="btn btn-primary" @click="renamePortfolio">Rename Portfolio</button>
             </div>
           </div>
-          </br>
-          </br>
+          <br/>
+        <hr/>
+          <br/>
           <div>
             <label>Add a new portfolio:</label>
             <div>
@@ -66,12 +67,86 @@
               <button type="button" class="btn btn-primary" @click="addPortfolio">Add Portfolio</button>
             </div>
           </div>
-        </br>
+        <br/>
+        <hr/>
+        <br/>
           <div class="button-container">
             <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="closePortfolioEditPopup">Close</button>
           </div>
         </form>
       </div>
+
+      <div v-if="entryEditPopup" class="popup" @click.self="closeEntryEditPopup">
+        <form class="popup-form" @submit.prevent="submitForm">
+          <div style="overflow:hidden;">
+            <div style="float:left; width:50%; padding:10px;">
+              <h4>Delete or edit an entry:</h4>
+              <div>
+                <h6>Select a Portfolio:</h6>
+                <select v-model="selectedCurrentUserPortfolio">
+                  <option disabled value="">Please select one</option>
+                  <option v-for="option in currentUser_portfolios" :value="option">{{ option }}</option>
+                </select>
+              </div>
+              <br/>
+              <div>
+                <h6>Select an entry from the previously selected portfolio:</h6>
+                <select v-model="selectedCurrentUserEntry">
+                  <option disabled value="">Please select one</option>
+                  <option v-for="option in currentUser_subEntryMap[selectedCurrentUserPortfolio]" :value="option">{{ option.title }}</option>
+                </select>
+              </div>
+              <div>
+                <div>
+                  <h6>Enter a new entry title:</h6>
+                  <input type="text" placeholder="Enter new entry title" v-model="newEntryTitle" />
+                </div>
+                <br/>
+                <div>
+                  <h6>Enter a new entry description:</h6>
+                  <input type="text" placeholder="Enter new entry description" v-model="newEntryDescription" />
+                </div>
+              </div>
+              <br/>
+              <div class="button-container">
+                <button type="button" class="btn btn-danger" data-dismiss="modal" @click="deleteEntry">Delete entry/button>
+                <button type="button" class="btn btn-primary" @click="updateEntry">Apply changes</button>
+              </div>
+            </div>
+      
+            <div style="float:right; width:50%; padding:10px;">
+              <h4>Add a new entry:</h4>
+              <div>
+                <h6>Select a Portfolio to add a new entry into:</h6>
+                <select v-model="selectedPortfolioForEntryAddition">
+                  <option disabled value="">Please select one</option>
+                  <option v-for="option in currentUser_portfolios" :value="option">{{ option }}</option>
+                </select>
+              </div>
+              <div>
+                <h6>Enter a new entry title:</h6>
+                <input type="text" placeholder="Enter new entry title" v-model="addEntryTitle" />
+                <br/>
+                <h6>Enter a new entry description:</h6>
+                <input type="text" placeholder="Enter new entry description" v-model="addEntryDescription" />
+              </div>
+              </br>
+              <div class="button-container">
+                <button type="button" class="btn btn-primary" @click="addEntry">Add Entry</button>
+              </div>
+              <br/>
+              <hr/>
+              <br/>
+              <div class="button-container">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="closeEntryEditPopup">Close</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      
+      
+          
 
       <div v-if="showUserSearch">
         <!-- Page Content -->
