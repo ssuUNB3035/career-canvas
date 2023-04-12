@@ -134,7 +134,7 @@ Vue.component('login-logout', {
       <button v-if="this.$parent.$parent.authenticated" @click="showProfileEditPopup" type="button" class="btn btn-primary">Edit Profile</button>
       <button v-if="this.$parent.$parent.authenticated" @click="showPortfolioEditPopup" type="button" class="btn btn-primary">Edit Portfolios</button>
       <button v-if="this.$parent.$parent.authenticated" @click="showEntryEditPopup" type="button" class="btn btn-primary">Edit Portfolio entries</button>
-      <button v-if="this.$parent.$parent.authenticated" @click="logout" type="button" class="btn btn-primary">Logout</button>
+      <button v-if="this.$parent.$parent.authenticated" @click="logout" type="button" class="btn btn-danger">Logout</button>
     </div>
   `
 });
@@ -165,13 +165,13 @@ Vue.component('navbar', {
       <img src="./resource/websiteLogoWhite.png" class="logo" />
       <ul class="tabs">
         <li>
-          <button @click="userSearchClick" type="button" class="btn btn-outline-primary">User Search</button>
+          <button @click="userSearchClick" type="button" class="btn btn-outline-light">User Search</button>
         </li>
         <li>
-          <button @click="myPortfolioClick" type="button" class="btn btn-outline-primary">My Portfolio</button>
+          <button @click="myPortfolioClick" type="button" class="btn btn-outline-light">My Portfolio</button>
         </li>
         <li>
-          <button @click="aboutClick" type="button" class="btn btn-outline-primary">About</button>
+          <button @click="aboutClick" type="button" class="btn btn-outline-light">About</button>
         </li>
       </ul>
       <div>
@@ -454,67 +454,83 @@ methods: {
     this.popupVisible = false;
   },
   saveProfileChanges() {
-    console.log("hello!");
-    axios
-      .put(this.serviceURL+"/user/" + this.currentUser.userName, {
-        "userId": this.currentUser.userId,
-        "userName": this.currentUser.userName,
-        "displayName": this.currentUser.displayName,
-        "intro": this.currentUser.intro,
-        "media_id": "0"
-      })
-      .then(response => {
-          if (response.status == 200) {
-            alert("Saved profile changes!");
-          }
-      })
-      .catch(e => {
-        console.log(e);
-    });
-
-    this.profileEditPopup = false;
-  },
-  renamePortfolio() {
-    let selectedPortfolioId = "";
-
-    this.allCurrentUserPortfolios.forEach(p => {
-      if (p.title == this.selectedCurrentUserPortfolio) {
-        selectedPortfolioId = p.portfolioId;
-      }
-    });
-
-    if (selectedPortfolioId != "") {
+    if (this.currentUser.displayName == "" && this.currentUser.intro =="") {
+      alert("Your display name and introduction cannot be blank!");
+    }
+    else if(this.currentUser.displayName == "") {
+      alert("Your display name cannot be blank!");
+    }
+    else if(this.currentUser.intro == "") {
+      alert("Your introduction cannot be blank!");
+    }
+    else {
       axios
-        .put(this.serviceURL+"/portfolio/" + this.currentUser.userId, {
-          "portfolioId": selectedPortfolioId,
-          "title": this.newPortfolioTitle
+        .put(this.serviceURL+"/user/" + this.currentUser.userName, {
+          "userId": this.currentUser.userId,
+          "userName": this.currentUser.userName,
+          "displayName": this.currentUser.displayName,
+          "intro": this.currentUser.intro,
+          "media_id": "0"
         })
         .then(response => {
-          if (response.status == 200) {
-            // Replace data with new
-            let tempPortfolios = this.currentUser_portfolios;
-            for(let i = 0; i < tempPortfolios.length; i++) {
-              if (tempPortfolios[i] == this.selectedCurrentUserPortfolio) {
-                tempPortfolios[i] = this.newPortfolioTitle;
-              }
+            if (response.status == 200) {
+              alert("Saved profile changes!");
             }
-            this.currentUser_portfolios = tempPortfolios;
-            this.selectedCurrentUserPortfolio = newPortfolioTitle;
-
-            this.currentUser_subEntryMap[this.newPortfolioTitle] = this.currentUser_subEntryMap[this.selectedCurrentUserPortfolio];
-            delete this.currentUser_subEntryMap[this.selectedCurrentUserPortfolio];
-          }
-          
-          // Cheeky refresh 
-          this.currentUser_portfolios.push("reloading...");
-          this.currentUser_portfolios.pop();
         })
         .catch(e => {
           console.log(e);
-        });
+      });
+
+      this.profileEditPopup = false;
+    }
+  },
+  renamePortfolio() {
+    if (this.newPortfolioTitle == "") {
+      alert("Please full out the portfolio's new title!");
     }
     else {
-      alert("Cannot find portfolio to rename, please re-login and try again.");
+      let selectedPortfolioId = "";
+
+      this.allCurrentUserPortfolios.forEach(p => {
+        if (p.title == this.selectedCurrentUserPortfolio) {
+          selectedPortfolioId = p.portfolioId;
+        }
+      });
+
+      if (selectedPortfolioId != "") {
+        axios
+          .put(this.serviceURL+"/portfolio/" + this.currentUser.userId, {
+            "portfolioId": selectedPortfolioId,
+            "title": this.newPortfolioTitle
+          })
+          .then(response => {
+            if (response.status == 200) {
+              // Replace data with new
+              let tempPortfolios = this.currentUser_portfolios;
+              for(let i = 0; i < tempPortfolios.length; i++) {
+                if (tempPortfolios[i] == this.selectedCurrentUserPortfolio) {
+                  tempPortfolios[i] = this.newPortfolioTitle;
+                }
+              }
+              this.currentUser_portfolios = tempPortfolios;
+              this.selectedCurrentUserPortfolio = newPortfolioTitle;
+
+              this.currentUser_subEntryMap[this.newPortfolioTitle] = this.currentUser_subEntryMap[this.selectedCurrentUserPortfolio];
+              delete this.currentUser_subEntryMap[this.selectedCurrentUserPortfolio];
+            }
+            
+            // Cheeky refresh 
+            this.currentUser_portfolios.push("reloading...");
+            this.currentUser_portfolios.pop();
+            alert("Portfolio updated!");
+          })
+          .catch(e => {
+            console.log(e);
+          });
+      }
+      else {
+        alert("Cannot find portfolio to rename, please re-login and try again.");
+      }
     }
   },
   addPortfolio() {
@@ -528,6 +544,7 @@ methods: {
           this.allCurrentUserPortfolios.push(response.data[0]);
           this.currentUser_portfolios.push(this.addPortfolioTitle);
           this.currentUser_subEntryMap[this.addPortfolioTitle] = [];
+          alert("Portfolio added!");
         }
       })
       .catch(e => {
@@ -556,6 +573,7 @@ methods: {
           delete this.currentUser_subEntryMap[this.selectedCurrentUserPortfolio];
 
           this.selectedCurrentUserPortfolio = this.currentUser_portfolios[0];
+          alert("Portfolio removed!");
         }
       })
       .catch(e => {
@@ -585,6 +603,7 @@ methods: {
         console.log(response);
         if (response.status == 200) {
           this.refreshCurrentUserData();
+          alert("Entry deleted!");
         }
       })
       .catch(e => {
@@ -592,38 +611,50 @@ methods: {
       });
   },
   updateEntry() {
-    let selectedPortfolioId = "";
+    if (this.newEntryTitle == "" && this.newEntryDescription == "") {
+      alert("Please full out the entry's new title and description!");
+    }
+    else if (this.newEntryTitle == "") {
+      alert("please fill out the entry's new title!");
+    }
+    else if (this.newEntryDescription == "") {
+      alert("Please fill out the entry's new description!");
+    }
+    else {
+      let selectedPortfolioId = "";
 
-    this.allCurrentUserPortfolios.forEach(p => {
-      if (p.title == this.selectedCurrentUserPortfolio) {
-        selectedPortfolioId = p.portfolioId;
-      }
-    });
+      this.allCurrentUserPortfolios.forEach(p => {
+        if (p.title == this.selectedCurrentUserPortfolio) {
+          selectedPortfolioId = p.portfolioId;
+        }
+      });
 
-    let selectedEntryId = "";
+      let selectedEntryId = "";
 
-    this.currentUser_subEntryMap[this.selectedCurrentUserPortfolio].forEach(p => {
-      if (p.title == this.selectedCurrentUserEntry.title) {
-        selectedEntryId = p.subEntryId;
-      }
-    })
-
-    axios
-      .put(this.serviceURL + "/portfolio/" + this.currentUser.userId + "/subportfolio/" + selectedPortfolioId, {
-        "subEntryId": selectedEntryId,
-        "title": this.newEntryTitle,
-        "content": this.newEntryDescription,
-        "media_src": null
-      })
-      .then(response => {
-        console.log(response);
-        if (response.status == 200) {
-          this.refreshCurrentUserData();
+      this.currentUser_subEntryMap[this.selectedCurrentUserPortfolio].forEach(p => {
+        if (p.title == this.selectedCurrentUserEntry.title) {
+          selectedEntryId = p.subEntryId;
         }
       })
-      .catch(e => {
-        console.log(e);
-      });
+
+      axios
+        .put(this.serviceURL + "/portfolio/" + this.currentUser.userId + "/subportfolio/" + selectedPortfolioId, {
+          "subEntryId": selectedEntryId,
+          "title": this.newEntryTitle,
+          "content": this.newEntryDescription,
+          "media_src": null
+        })
+        .then(response => {
+          console.log(response);
+          if (response.status == 200) {
+            this.refreshCurrentUserData();
+            alert("Entry updated!");
+          }
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    }
   },
   addEntry() {
     let selectedPortfolioId = "";
@@ -644,6 +675,7 @@ methods: {
         console.log(response);
         if (response.status == 200) {
           this.currentUser_subEntryMap[this.selectedPortfolioForEntryAddition].push(response.data)
+          alert("Entry added!");
         }
       })
       .catch(e => {

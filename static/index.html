@@ -17,36 +17,56 @@
 
       <div v-if="popupVisible" class="popup" @click.self="closePopup">
         <form class="popup-form" @submit.prevent="submitForm">
-          <label>Username:</label>
-          <input type="text" v-model="username"><br><br>
-          <label>Password:</label>
-          <input type="password" v-model="password"><br><br>
-          <button type="submit">Submit</button>
+          <div>
+            <label>Username:</label>
+          <input type="text" v-model="username">
+          </div>
+          <br/>
+          <div>
+            <label>Password:</label>
+          <input type="password" v-model="password">
+          </div>
+          <br/>
+          <div>
+            <button class="btn btn-primary" type="submit">Submit</button>
+          </div>
         </form>
       </div>
 
       <div v-if="profileEditPopup" class="popup" @click.self="closeProfileEditPopup">
         <form class="popup-form" @submit.prevent="submitForm">
-          <label for="displayName">Display Name</label>
-          <input type="text" class="form-control" id="displayName" v-model="currentUser.displayName" placeholder="Enter new display name">
-          <label for="introduction">Introduction</label>
-          <input type="text" class="form-control" id="introduction" v-model="currentUser.intro" placeholder="Enter new introduction">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="closeProfileEditPopup">Close</button>
+          <div>
+            <label for="displayName">Display Name</label>
+            <input type="text" class="form-control" id="displayName" v-model="currentUser.displayName" placeholder="Enter new display name">
+          </div>
+          <br/>
+          <div>
+            <label for="introduction">Introduction</label>
+            <input type="text" class="form-control" id="introduction" v-model="currentUser.intro" placeholder="Enter new introduction">
+          </div>
+          <hr/>
+          <div>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="closeProfileEditPopup">Close</button>
           <button type="button" class="btn btn-primary" @click="saveProfileChanges">Save changes</button>
+          </div>
         </form>
       </div>
 
       <div v-if="portfolioEditPopup" class="popup" @click.self="closePortfolioEditPopup">
         <form class="popup-form" @submit.prevent="submitForm">
-          <label>Delete or rename a portfolio:</label>
+          <h4>Delete or rename a portfolio:</h4>
           <div>
-            <select v-model="selectedCurrentUserPortfolio">
-              <option disabled value="">Please select one</option>
-              <option v-for="option in currentUser_portfolios" :value="option">{{ option }}</option>
-            </select>
+            <div>
+              <h6>Select a portfolio to delete/rename:</h6>
+              <select v-model="selectedCurrentUserPortfolio">
+                <option disabled value="">Please select one</option>
+                <option v-for="option in currentUser_portfolios" :value="option">{{ option }}</option>
+              </select>
+            </div>
             <br/>
             <div>
-              <input type="text" placeholder="Enter new Portfolio name" v-model="newPortfolioTitle" />
+              <h6>Enter a new portfolio title:</h6>
+              <input type="text" placeholder="Enter new Portfolio title" v-model="newPortfolioTitle" />
             </div>
             <br/>
             <div class="button-container">
@@ -58,9 +78,10 @@
         <hr/>
           <br/>
           <div>
-            <label>Add a new portfolio:</label>
+            <h4>Add a new portfolio:</h4>
             <div>
-              <input type="text" placeholder="Enter new portfolio name" v-model="addPortfolioTitle" />
+              <h6>Enter the new portfolio title:</h6>
+              <input type="text" placeholder="Enter new portfolio title" v-model="addPortfolioTitle" />
             </div>
             </br>
             <div class="button-container">
@@ -96,6 +117,7 @@
                   <option v-for="option in currentUser_subEntryMap[selectedCurrentUserPortfolio]" :value="option">{{ option.title }}</option>
                 </select>
               </div>
+              <br/>
               <div>
                 <div>
                   <h6>Enter a new entry title:</h6>
@@ -123,12 +145,17 @@
                   <option v-for="option in currentUser_portfolios" :value="option">{{ option }}</option>
                 </select>
               </div>
+              <br/>
               <div>
-                <h6>Enter a new entry title:</h6>
-                <input type="text" placeholder="Enter new entry title" v-model="addEntryTitle" />
+                <div>
+                  <h6>Enter a new entry title:</h6>
+                  <input type="text" placeholder="Enter new entry title" v-model="addEntryTitle" />
+                </div>
                 <br/>
-                <h6>Enter a new entry description:</h6>
-                <input type="text" placeholder="Enter new entry description" v-model="addEntryDescription" />
+                <div>
+                  <h6>Enter a new entry description:</h6>
+                  <input type="text" placeholder="Enter new entry description" v-model="addEntryDescription" />
+                </div>
               </div>
               </br>
               <div class="button-container">

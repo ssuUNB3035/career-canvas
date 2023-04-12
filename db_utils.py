@@ -210,10 +210,10 @@ def deleteSubPortfolio(subEntryId):
 		with dbConnection.cursor() as cursor:
 			cursor.callproc('deleteSubPortfolio', (subEntryId,))
 			dbConnection.commit()
-			return cursor.fetchAll()
+			return True
 	except Exception as e:
 		print(f'Error executing deleteSubPortfolio: {e}')
-		return None
+		return False
 	finally:
 		cursor.close()
 		dbConnection.close()
