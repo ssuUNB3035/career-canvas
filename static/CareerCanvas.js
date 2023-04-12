@@ -67,7 +67,6 @@ Vue.component('user-card', {
             this.$parent.selectedUser_portfolios = portfolios;
             this.$parent.selectedUser_selectedPortfolio = portfolios[0];
             this.$parent.selectedUser_subEntryMap = map;
-            console.log(this.$parent.selectedUser_portfolios);
           }
       })
       .catch(e => {
@@ -291,18 +290,13 @@ mounted() {
   axios
   .get(this.serviceURL + "/users")
   .then(response => {
-    console.log(response);
     if (response.status == 200) {
       this.users = response.data.users;
     }
-    console.log("Here are the users1:");
-    console.log(this.users);
   })
   .catch(e => {
     console.log(e);
   });
-  console.log("Here are the users");
-  console.log(this.users);
 },
 computed: {
   cards() {
@@ -386,7 +380,6 @@ methods: {
           this.currentUser_selectedPortfolio = portfolios[0];
           this.selectedCurrentUserPortfolio = portfolios[0];
           this.currentUser_subEntryMap = map;
-          console.log(this.currentUser_portfolios);
         }
     })
     .catch(e => {
@@ -408,40 +401,7 @@ methods: {
             this.loggedIn = response.data.user_id;
             this.currentUser = response.data.user[0];
 
-            // Gets all the portfolios for the user
-            axios
-            .get(this.serviceURL+"/portfolio/" + this.currentUser.userId)
-            .then(response => {
-                if (response.data.status == "success") {
-                  this.allCurrentUserPortfolios = response.data.portfolios;
-                  var portfolios = [];
-                  var tempArray = response.data.portfolios;
-
-                  let map = {};
-
-                  // Puts the portfolio title in an array
-                  for (let i = 0; i < tempArray.length; i++){
-                    portfolios.push(tempArray[i].title);
-
-                    // Maps all of the subEntries to a portfolio name
-                    axios
-                    .get(this.serviceURL+"/portfolio/" + this.currentUser.userId + "/subportfolio/" + tempArray[i].portfolioId)
-                    .then(response => {
-                        if (response.data.status == "success") {
-                          map[tempArray[i].title] = response.data.subPortfolios;
-                        }
-                    })
-                  }
-                  this.currentUser_portfolios = portfolios;
-                  this.currentUser_selectedPortfolio = portfolios[0];
-                  this.selectedCurrentUserPortfolio = portfolios[0];
-                  this.currentUser_subEntryMap = map;
-                  console.log(this.currentUser_portfolios);
-                }
-            })
-            .catch(e => {
-              console.log(e);
-            });
+            this.refreshCurrentUserData();
           }
       })
       .catch(e => {
@@ -474,6 +434,7 @@ methods: {
         })
         .then(response => {
             if (response.status == 200) {
+              this.refreshCurrentUserData();
               alert("Saved profile changes!");
             }
         })
@@ -506,17 +467,7 @@ methods: {
           .then(response => {
             if (response.status == 200) {
               // Replace data with new
-              let tempPortfolios = this.currentUser_portfolios;
-              for(let i = 0; i < tempPortfolios.length; i++) {
-                if (tempPortfolios[i] == this.selectedCurrentUserPortfolio) {
-                  tempPortfolios[i] = this.newPortfolioTitle;
-                }
-              }
-              this.currentUser_portfolios = tempPortfolios;
-              this.selectedCurrentUserPortfolio = newPortfolioTitle;
-
-              this.currentUser_subEntryMap[this.newPortfolioTitle] = this.currentUser_subEntryMap[this.selectedCurrentUserPortfolio];
-              delete this.currentUser_subEntryMap[this.selectedCurrentUserPortfolio];
+              this.refreshCurrentUserData();
             }
             
             // Cheeky refresh 
@@ -540,10 +491,7 @@ methods: {
       })
       .then(response => {
         if (response.status == 200) {
-          console.log(response);
-          this.allCurrentUserPortfolios.push(response.data[0]);
-          this.currentUser_portfolios.push(this.addPortfolioTitle);
-          this.currentUser_subEntryMap[this.addPortfolioTitle] = [];
+          this.refreshCurrentUserData();
           alert("Portfolio added!");
         }
       })
@@ -560,17 +508,11 @@ methods: {
       }
     });
 
-    console.log(selectedPortfolioId);
     axios
       .delete(this.serviceURL+"/portfolio/" + this.currentUser.userId + "/" + selectedPortfolioId)
       .then(response => {
         if (response.status == 200) {
-          console.log(response);
-          const index = this.currentUser_portfolios.indexOf(this.selectedCurrentUserPortfolio);
-          if (index > -1) {
-            this.currentUser_portfolios.splice(index, 1);
-          }
-          delete this.currentUser_subEntryMap[this.selectedCurrentUserPortfolio];
+          this.refreshCurrentUserData();
 
           this.selectedCurrentUserPortfolio = this.currentUser_portfolios[0];
           alert("Portfolio removed!");
@@ -600,7 +542,6 @@ methods: {
     axios
       .delete(this.serviceURL + "/portfolio/" + this.currentUser.userId + "/subportfolio/" + selectedPortfolioId + "/" + selectedEntryId)
       .then(response => {
-        console.log(response);
         if (response.status == 200) {
           this.refreshCurrentUserData();
           alert("Entry deleted!");
@@ -645,7 +586,6 @@ methods: {
           "media_src": null
         })
         .then(response => {
-          console.log(response);
           if (response.status == 200) {
             this.refreshCurrentUserData();
             alert("Entry updated!");
@@ -672,9 +612,8 @@ methods: {
         "content": this.addEntryDescription
       })
       .then(response => {
-        console.log(response);
         if (response.status == 200) {
-          this.currentUser_subEntryMap[this.selectedPortfolioForEntryAddition].push(response.data)
+          this.refreshCurrentUserData();
           alert("Entry added!");
         }
       })
