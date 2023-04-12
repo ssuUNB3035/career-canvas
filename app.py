@@ -304,7 +304,7 @@ class Portfolio(Resource):
 #	POST Creates a user subportfolio
 #	DELETE deletes a user subportfolio
 #
-class SubPortfolio(Resource):
+class SubPortfolios(Resource):
 	def post(self, userID, portfolioId):
 		# if not request.json:
 		# 	abort(404) # bad request
@@ -323,9 +323,9 @@ class SubPortfolio(Resource):
 
 		return make_response(jsonify(response), 200)
 
-	def put(self, userID):
-		if not request.json:
-			abort(404) # bad request
+	def put(self, userID, portfolioId):
+		# if not request.json:
+		# 	abort(404) # bad request
 
 		if not auth():
 			response = {'status': 'fail'}
@@ -335,36 +335,17 @@ class SubPortfolio(Resource):
 		parser = reqparse.RequestParser()
 		try:
  			# Check for required attributes in json document, create a dictionary
-			parser.add_argument('portfolioId', type=int, required=True)
+			parser.add_argument('subEntryId', type=str, required=True)
 			parser.add_argument('title', type=str, required=True)
 			parser.add_argument('content', type=str, required=True)
 			parser.add_argument('media_src', type=int, required=False)
 			request_params = parser.parse_args()
 			print(request_params)
-			response = db.updateSubPortfolio(request_params['portfolioId'], request_params['content'], request_params['media_src'])
+			response = db.updateSubPortfolio(request_params['subEntryId'], request_params['title'], request_params['content'], request_params['media_src'])
 		except:
 			abort(400) # bad request
 
 		return make_response(jsonify(response), 200)
-
-	def delete(self, userID):
-		if not request.json:
-			abort(404) # bad request
-
-		if not auth():
-			response = {'status': 'fail'}
-			responseCode = 403
-			return make_response(jsonify(response), responseCode)
-
-		parser = reqparse.RequestParser()
-		try:
-			parser.add_argument('id', type=str, required=True)
-			request_params = parser.parse_args()
-			#print(request_params)
-			result = db.deleteSubPortfolio(db.getUser(userID)['id'], request_params['id'])
-		except:
-			abort(500)
-		return make_response(jsonify(result), 200)
 
 	def get(self, userID, portfolioId):	
 		# if not request.json:
@@ -377,6 +358,22 @@ class SubPortfolio(Resource):
 		response = {'status': 'success', 'subPortfolios': result }
 		return make_response(jsonify(response), 200)
 		
+class SubPortfolio(Resource):
+	def delete(self, userID, portfolioId, subEntryId):
+		if not request.json:
+			abort(404) # bad request
+
+		if not auth():
+			response = {'status': 'fail'}
+			responseCode = 403
+			return make_response(jsonify(response), responseCode)
+
+		try:
+			#print(request_params)
+			result = db.deleteSubPortfolio(subEntryId)
+		except:
+			abort(500)
+		return make_response(jsonify(result), 200)
 ####################################################################################
 #
 # Create API Object
@@ -389,7 +386,8 @@ api.add_resource(Users, '/users')
 
 api.add_resource(Portfolios, '/portfolio/<string:userID>')
 api.add_resource(Portfolio, '/portfolio/<string:userID>/<int:portfolioId>')
-api.add_resource(SubPortfolio, '/portfolio/<string:userID>/subportfolio/<int:portfolioId>')
+api.add_resource(SubPortfolios, '/portfolio/<string:userID>/subportfolio/<int:portfolioId>')
+api.add_resource(SubPortfolio, '/portfolio/<string:userID>/subportfolio/<int:portfolioId>/<int:subEntryId>')
 
 #api.add_resource(UserPost, '/user/<string:userID>/user_post') 
 #api.add_resource(Connection, '/user/string:<userID>/connection')

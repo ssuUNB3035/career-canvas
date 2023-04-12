@@ -210,10 +210,10 @@ def deleteSubPortfolio(subEntryId):
 		with dbConnection.cursor() as cursor:
 			cursor.callproc('deleteSubPortfolio', (subEntryId,))
 			dbConnection.commit()
-			return True
+			return cursor.fetchAll()
 	except Exception as e:
 		print(f'Error executing deleteSubPortfolio: {e}')
-		return False
+		return None
 	finally:
 		cursor.close()
 		dbConnection.close()
@@ -239,7 +239,7 @@ def getSubPortfolios(portfolioId):
 
 	return result
 
-def updateSubPortfolio(subEntryId, content, media_src):
+def updateSubPortfolio(subEntryId, title, content, media_src):
 	dbConnection = pymysql.connect(settings.DBHOST,
 										settings.DBUSER,
 										settings.DBPASSWD,
@@ -249,7 +249,7 @@ def updateSubPortfolio(subEntryId, content, media_src):
 
 	try:
 		with dbConnection.cursor() as cursor:
-			cursor.callproc('updateSubPortfolio', (subEntryId, content, media_src))
+			cursor.callproc('updateSubPortfolio', (subEntryId, title, content, media_src))
 			result = cursor.fetchone()
 			dbConnection.commit()
 	except Exception as e:

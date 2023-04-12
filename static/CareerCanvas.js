@@ -357,6 +357,42 @@ methods: {
   closeEntryEditPopup: function() {
     this.entryEditPopup = false;
   },
+  refreshCurrentUserData: function() {
+    // Gets all the portfolios for the user
+    axios
+    .get(this.serviceURL+"/portfolio/" + this.currentUser.userId)
+    .then(response => {
+        if (response.data.status == "success") {
+          this.allCurrentUserPortfolios = response.data.portfolios;
+          var portfolios = [];
+          var tempArray = response.data.portfolios;
+
+          let map = {};
+
+          // Puts the portfolio title in an array
+          for (let i = 0; i < tempArray.length; i++){
+            portfolios.push(tempArray[i].title);
+
+            // Maps all of the subEntries to a portfolio name
+            axios
+            .get(this.serviceURL+"/portfolio/" + this.currentUser.userId + "/subportfolio/" + tempArray[i].portfolioId)
+            .then(response => {
+                if (response.data.status == "success") {
+                  map[tempArray[i].title] = response.data.subPortfolios;
+                }
+            })
+          }
+          this.currentUser_portfolios = portfolios;
+          this.currentUser_selectedPortfolio = portfolios[0];
+          this.selectedCurrentUserPortfolio = portfolios[0];
+          this.currentUser_subEntryMap = map;
+          console.log(this.currentUser_portfolios);
+        }
+    })
+    .catch(e => {
+      console.log(e);
+    });
+  },
   submitForm: function() {
     if (this.username != "" && this.password != "") {
 
@@ -527,10 +563,67 @@ methods: {
       });
   },
   deleteEntry() {
+    let selectedPortfolioId = "";
 
+    this.allCurrentUserPortfolios.forEach(p => {
+      if (p.title == this.selectedCurrentUserPortfolio) {
+        selectedPortfolioId = p.portfolioId;
+      }
+    });
+
+    let selectedEntryId = "";
+
+    this.currentUser_subEntryMap[this.selectedCurrentUserPortfolio].forEach(p => {
+      if (p.title == this.selectedCurrentUserEntry.title) {
+        selectedEntryId = p.subEntryId;
+      }
+    })
+
+    axios
+      .delete(this.serviceURL + "/portfolio/" + this.currentUser.userId + "/subportfolio/" + selectedPortfolioId + "/" + selectedEntryId)
+      .then(response => {
+        console.log(response);
+        if (response.status == 200) {
+          this.refreshCurrentUserData();
+        }
+      })
+      .catch(e => {
+        console.log(e);
+      });
   },
   updateEntry() {
+    let selectedPortfolioId = "";
 
+    this.allCurrentUserPortfolios.forEach(p => {
+      if (p.title == this.selectedCurrentUserPortfolio) {
+        selectedPortfolioId = p.portfolioId;
+      }
+    });
+
+    let selectedEntryId = "";
+
+    this.currentUser_subEntryMap[this.selectedCurrentUserPortfolio].forEach(p => {
+      if (p.title == this.selectedCurrentUserEntry.title) {
+        selectedEntryId = p.subEntryId;
+      }
+    })
+
+    axios
+      .put(this.serviceURL + "/portfolio/" + this.currentUser.userId + "/subportfolio/" + selectedPortfolioId, {
+        "subEntryId": selectedEntryId,
+        "title": this.newEntryTitle,
+        "content": this.newEntryDescription,
+        "media_src": null
+      })
+      .then(response => {
+        console.log(response);
+        if (response.status == 200) {
+          this.refreshCurrentUserData();
+        }
+      })
+      .catch(e => {
+        console.log(e);
+      });
   },
   addEntry() {
     let selectedPortfolioId = "";
@@ -553,6 +646,9 @@ methods: {
           this.currentUser_subEntryMap[this.selectedPortfolioForEntryAddition].push(response.data)
         }
       })
+      .catch(e => {
+        console.log(e);
+      });
   }
   }
 });
